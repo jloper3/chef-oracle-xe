@@ -9,7 +9,7 @@ execute 'copy oracle installation file' do
   creates "/tmp/#{oracle_filename}"
 end
 
-%w{alien bc libaio1 expect unixodbc chkconfig pmount}.each do | pkg |
+%w{ed bc }.each do | pkg |
   package pkg do
     action :install
   end
@@ -31,33 +31,33 @@ user 'oracle' do
   supports :manage_home => true
 end
 
-symlinks.each do |to, from|
-  execute "symlink from #{from} to #{to}" do
-    command "ln -s #{from} #{to}"
-    creates to
-  end
-end
+#symlinks.each do |to, from|
+#  execute "symlink from #{from} to #{to}" do
+#    command "ln -s #{from} #{to}"
+#    creates to
+#  end
+#end
 
-execute 'create subsys' do
-  command 'mkdir /var/lock/subsys'
-  creates '/var/lock/subsys'
-end
+#execute 'create subsys' do
+#  command 'mkdir /var/lock/subsys'
+#  creates '/var/lock/subsys'
+#end
 
-cookbook_file '/etc/sysctl.d/60-oracle.conf ' do
-  action :create
-  source 'oracle.conf'
-  mode 644
-end
+#cookbook_file '/etc/sysctl.d/60-oracle.conf ' do
+#  action :create
+#  source 'oracle.conf'
+#  mode 644
+#end
 
-cookbook_file '/sbin/chkconfig' do
-  action :create
-  source 'chkconfig'
-  mode 755
-end
+#cookbook_file '/sbin/chkconfig' do
+#  action :create
+#  source 'chkconfig'
+#  mode 755
+#end
 
 execute 'install oracle' do
   user 'root'
-  command "alien --scripts -i #{oracle_filename}"
+  command "rpm -ivh #{oracle_filename}"
   cwd '/tmp'
   action :run
   creates '/u01/app/oracle'
